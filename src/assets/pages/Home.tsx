@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom';
-import { motion, type Variants } from 'framer-motion';
-import Particles from 'react-tsparticles';
-import { loadFull } from 'tsparticles';
-import { useCallback, useState } from 'react';
-import Mammogram from '../components/Mammogram';
-import logo from '../images/logo.png';
+import { Link } from "react-router-dom";
+import { motion, type Variants } from "framer-motion";
+import Particles from "react-tsparticles";
+import { loadFull } from "tsparticles";
+import { useCallback, useState } from "react";
+import Mammogram from "../components/Mammogram";
+import logo from "../images/logo.png";
 
 // Animation variants
 const containerVariants: Variants = {
@@ -23,7 +23,7 @@ const itemVariants: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: 'easeOut' },
+    transition: { duration: 0.5, ease: "easeOut" },
   },
 };
 
@@ -37,25 +37,25 @@ const buttonVariants: Variants = {
     scale: 1,
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4, ease: 'easeOut' },
+    transition: { duration: 0.4, ease: "easeOut" },
   },
   hover: {
     scale: 1.05,
     rotate: 2,
-    boxShadow: '0px 8px 24px rgba(236, 72, 153, 0.5)', // Glow effect with breast-pink-500
-    backgroundColor: '#DB2777', // breast-pink-600
-    transition: { duration: 0.3, ease: 'easeOut' },
+    boxShadow: "0px 8px 24px rgba(236, 72, 153, 0.5)", // Glow effect with breast-pink-500
+    backgroundColor: "#DB2777", // breast-pink-600
+    transition: { duration: 0.3, ease: "easeOut" },
   },
   tap: {
     scale: 0.98,
     rotate: -2,
-    boxShadow: '0px 4px 12px rgba(236, 72, 153, 0.3)',
+    boxShadow: "0px 4px 12px rgba(236, 72, 153, 0.3)",
     transition: { duration: 0.2 },
   },
 };
 
 const Home: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const particlesInit = useCallback(async (engine: any) => {
     await loadFull(engine);
   }, []);
@@ -63,7 +63,9 @@ const Home: React.FC = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      window.location.href = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+      window.location.href = `https://www.google.com/search?q=${encodeURIComponent(
+        searchQuery
+      )}`;
     }
   };
 
@@ -74,26 +76,26 @@ const Home: React.FC = () => {
         id="tsparticles"
         init={particlesInit}
         options={{
-          background: { color: { value: '#1A1A1A' } },
+          background: { color: { value: "#1A1A1A" } },
           fpsLimit: 60,
           particles: {
             number: { value: 80, density: { enable: true, value_area: 800 } },
-            color: { value: '#EC4899' },
-            shape: { type: 'circle' },
+            color: { value: "#EC4899" },
+            shape: { type: "circle" },
             opacity: { value: 0.2, random: true },
             size: { value: 2, random: true },
             move: {
               enable: true,
               speed: 0.3,
-              direction: 'none',
+              direction: "none",
               random: true,
-              out_mode: 'out',
+              out_mode: "out",
             },
           },
           interactivity: {
             events: {
-              onhover: { enable: true, mode: 'repulse' },
-              onclick: { enable: true, mode: 'push' },
+              onhover: { enable: true, mode: "repulse" },
+              onclick: { enable: true, mode: "push" },
             },
             modes: {
               repulse: { distance: 100, duration: 0.4 },
@@ -110,7 +112,7 @@ const Home: React.FC = () => {
         className="fixed top-0 left-0 right-0 z-50 bg-dark-accent bg-opacity-80 backdrop-blur-md py-4 px-6 flex items-center justify-between"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
       >
         {/* Logo */}
         <Link to="/">
@@ -126,7 +128,14 @@ const Home: React.FC = () => {
 
         {/* Navigation Tabs */}
         <div className="flex space-x-8">
-          {['Home', 'About', 'Services', 'Resources', 'Contact', 'Validity'].map((tab) => (
+          {[
+            "Home",
+            "About",
+            "Services",
+            "Resources",
+            "Contact",
+            "Validity",
+          ].map((tab) => (
             <Link
               key={tab}
               to={`/${tab.toLowerCase()}`}
@@ -164,8 +173,18 @@ const Home: React.FC = () => {
               type="submit"
               className="absolute right-2 top-1/2 transform -translate-y-1/2 text-breast-pink-500"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </button>
           </div>
@@ -182,7 +201,8 @@ const Home: React.FC = () => {
           className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl text-center"
           variants={itemVariants}
         >
-          Empowering early detection and care for breast cancer through innovative healthcare solutions.
+          Empowering early detection and care for breast cancer through
+          innovative healthcare solutions.
         </motion.p>
 
         {/* Mammogram Graphic */}
@@ -195,9 +215,16 @@ const Home: React.FC = () => {
           className="max-w-3xl text-center mb-12 px-4"
           variants={itemVariants}
         >
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">Understanding Breast Cancer</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+            Understanding Breast Cancer
+          </h2>
           <p className="text-base sm:text-lg text-gray-400">
-            Breast cancer is one of the most common cancers worldwide, but early detection through regular mammograms can significantly improve outcomes. At Breast Beacon, we provide tools and resources to support patients, doctors, and clinicians in the fight against breast cancer. Stay informed, stay proactive, and prioritize your health.
+            Breast cancer is one of the most common cancers worldwide, but early
+            detection through regular mammograms can significantly improve
+            outcomes. At Breast Beacon, we provide tools and resources to
+            support patients, doctors, and clinicians in the fight against
+            breast cancer. Stay informed, stay proactive, and prioritize your
+            health.
           </p>
         </motion.div>
 
