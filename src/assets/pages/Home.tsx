@@ -150,7 +150,7 @@ const Home: React.FC = () => {
 
       {/* Main Content */}
       <motion.div
-        className="relative z-10 flex flex-col items-center justify-center min-h-screen pt-24 px-4  sm:px-6"
+        className="relative z-10 flex flex-col items-center justify-center min-h-screen pt-24 px-4 pb-5 sm:px-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
