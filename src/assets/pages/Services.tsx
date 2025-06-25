@@ -249,9 +249,6 @@ const Services: React.FC = () => {
               Your browser does not support the video tag. Please download the
               video <a href={demoVideo}>here</a>.
             </video>
-            <span className="absolute top-2 left-2 bg-breast-pink-500 text-dark-bg px-3 py-1 rounded text-sm font-semibold">
-              Demo Video
-            </span>
           </motion.div>
           <p className="text-lg text-gray-400 mt-4">
             Watch how our platform streamlines mammogram analysis and empowers
