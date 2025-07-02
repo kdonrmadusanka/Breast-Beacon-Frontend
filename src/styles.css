@@ -1,7 +1,13 @@
 @keyframes borderCycle {
-  0% { border-color: #EC4899; } /* breast-pink-500 */
-  50% { border-color: #DB2777; } /* breast-pink-600 */
-  100% { border-color: #EC4899; } /* breast-pink-500 */
+  0% {
+    border-color: #ec4899;
+  } /* breast-pink-500 */
+  50% {
+    border-color: #db2777;
+  } /* breast-pink-600 */
+  100% {
+    border-color: #ec4899;
+  } /* breast-pink-500 */
 }
 
 .animate-border-cycle {
