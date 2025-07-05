@@ -8,21 +8,23 @@ import {
   FiLinkedin,
 } from "react-icons/fi";
 
-const Footer = () => {
-  const links = [
-    { label: "Home", path: "/" },
-    { label: "About", path: "/about" },
-    { label: "Services", path: "/services" },
-    { label: "Contact", path: "/contact" },
-    { label: "Privacy", path: "/privacy" },
-  ];
+interface quickLinks {
+  label: string;
+  path: string;
+}
 
-  const socialLinks = [
-    { icon: FiGithub, url: "https://github.com" },
-    { icon: FiTwitter, url: "https://twitter.com" },
-    { icon: FiLinkedin, url: "https://linkedin.com" },
-  ];
+interface SocialLink {
+  label: string;
+  url: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
 
+interface FooterProps {
+  quickLinks: quickLinks[];
+  socialLinks: SocialLink[];
+}
+
+const Footer: React.FC<FooterProps> = ({ quickLinks, socialLinks }) => {
   const contactInfo = [
     { icon: FiMail, text: "support@breastbeacon.com" },
     { icon: FiPhone, text: "+1 (555) 123-4567" },
@@ -86,7 +88,7 @@ const Footer = () => {
               Quick Links
             </h4>
             <ul className="space-y-2">
-              {links.map((link, index) => (
+              {quickLinks.map((link, index) => (
                 <li key={index}>
                   <a
                     href={link.path}
