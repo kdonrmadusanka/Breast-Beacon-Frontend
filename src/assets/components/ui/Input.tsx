@@ -19,6 +19,7 @@ interface InputProps {
   className?: string;
   accept?: string; // For file inputs
   disabled?: boolean;
+  required?: boolean; // ✅ <-- Added
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -151,6 +152,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             onBlur={() => setIsFocused(!!value)}
             accept={accept}
             disabled={disabled}
+            required={false} // ✅ <-- Added
             className={`w-full bg-transparent focus:outline-none ${
               Icon ? "pl-10" : "pl-3"
             } ${type === "file" ? "cursor-pointer" : ""}`}
