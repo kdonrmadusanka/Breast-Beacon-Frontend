@@ -13,20 +13,24 @@ import {
   FiActivity,
   FiUser,
 } from "react-icons/fi";
+import type { IconType } from "react-icons";
 
-const Sidebar = () => {
+interface NavItem {
+  label: string;
+  path: string;
+  icon: IconType;
+}
+
+interface SidebarProps {
+  navItems: NavItem[];
+  isMobile: boolean;
+  onClose: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ navItems, isMobile, onClose }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const location = useLocation();
-
-  const navItems = [
-    { label: "Dashboard", path: "/dashboard", icon: FiHome },
-    { label: "Upload Scan", path: "/upload", icon: FiUpload },
-    { label: "Results", path: "/results", icon: FiFileText },
-    { label: "Education", path: "/education", icon: FiBookOpen },
-    { label: "Progress", path: "/progress", icon: FiActivity },
-    { label: "Settings", path: "/settings", icon: FiSettings },
-  ];
 
   // Animation variants
   const containerVariants = {
