@@ -5,7 +5,7 @@ import { type SvgIconTypeMap } from "@mui/material";
 import { type OverridableComponent } from "@mui/material/OverridableComponent";
 
 // Define types for props
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
   icon?:
     | IconType
@@ -13,8 +13,7 @@ interface ButtonProps {
   variant?: "filled" | "outlined";
   size?: "small" | "medium" | "large";
   color?: "primary" | "secondary" | "accent";
-  onClick?: () => void;
-  disabled?: boolean;
+  loading?: boolean; // optional if you need loading prop
   className?: string;
 }
 
@@ -24,6 +23,7 @@ const Button: React.FC<ButtonProps> = ({
   variant = "filled",
   size = "medium",
   color = "primary",
+  loading = false,
   onClick,
   disabled = false,
   className = "",
@@ -74,7 +74,7 @@ const Button: React.FC<ButtonProps> = ({
     <motion.button
       className={baseStyles}
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || loading}
       whileHover={!disabled ? "hover" : undefined}
       whileTap={!disabled ? "tap" : undefined}
       variants={motionVariants}
