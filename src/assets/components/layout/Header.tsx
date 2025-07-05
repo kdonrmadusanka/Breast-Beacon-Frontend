@@ -16,19 +16,21 @@ interface NavItem {
   path: string;
 }
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  navItems: NavItem[];
+  onMenuToggle?: () => void;
+  isMobile?: boolean;
+}
+
+const Header: React.FC<HeaderProps> = ({
+  navItems,
+  onMenuToggle,
+  isMobile,
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const navigate = useNavigate();
-
-  const navItems: NavItem[] = [
-    { label: "Home", path: "/" },
-    { label: "Dashboard", path: "/dashboard" },
-    { label: "Upload", path: "/upload" },
-    { label: "Results", path: "/results" },
-    { label: "Education", path: "/education" },
-  ];
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
