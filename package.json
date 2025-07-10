@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@clerk/clerk-js": "^5.71.0",
+    "@clerk/clerk-react": "^5.32.4",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^5.14.18",
@@ -18,6 +20,7 @@
     "framer-motion": "^10.16.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.60.0",
     "react-icons": "^4.12.0",
     "react-router-dom": "^7.6.3"
   },
