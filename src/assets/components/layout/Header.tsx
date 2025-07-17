@@ -1,211 +1,258 @@
-import React, { useState } from "react";
-import { useNavigate, NavLink } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { Menu, X, Sun, Moon, User, Bell, MessageSquare } from "lucide-react";
+import { cn } from "../../utils/cn";
+import { useTheme } from "next-themes";
+import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
+import Logo from "../logo/Logo";
+import { useEffect, useState } from "react";
 import {
-  FiMenu,
-  FiX,
-  FiUser,
-  FiSun,
-  FiMoon,
-  FiChevronDown,
-} from "react-icons/fi";
-import { Logo } from "../logo/index";
-
-interface NavItem {
-  label: string;
-  path: string;
-}
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu"; // Add dropdown component
 
 interface HeaderProps {
-  navItems: NavItem[];
-  onMenuToggle?: () => void;
-  isMobile?: boolean;
+  sidebarOpen: boolean;
+  toggleSidebar: () => void;
+  toggleTheme: () => void;
+  theme?: string;
 }
 
-const Header: React.FC<HeaderProps> = ({
-  navItems,
-  onMenuToggle,
-  isMobile,
-}) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const navigate = useNavigate();
+const Header = ({
+  sidebarOpen,
+  toggleSidebar,
+  toggleTheme,
+  theme,
+}: HeaderProps) => {
+  const [scrolled, setScrolled] = useState(false);
+  const [hasNotifications, setHasNotifications] = useState(true);
+  const [hasMessages, setHasMessages] = useState(false);
+  const navigate = useNavigate(); // Added for navigation
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle("dark");
+  // Mock notifications data
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      text: "New test results available",
+      read: false,
+      link: "/patient/results",
+    },
+    {
+      id: 2,
+      text: "Appointment reminder",
+      read: false,
+      link: "/patient/dashboard",
+    },
+  ]);
+
+  // Mock messages data
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      text: "Dr. Smith: Your biopsy is scheduled",
+      read: false,
+      link: "/messages/1",
+    },
+  ]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const markNotificationAsRead = (id: number) => {
+    setNotifications(
+      notifications.map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+    setHasNotifications(notifications.some((n) => !n.read && n.id !== id));
+  };
+
+  const markMessageAsRead = (id: number) => {
+    setMessages(messages.map((m) => (m.id === id ? { ...m, read: true } : m)));
+    setHasMessages(messages.some((m) => !m.read && m.id !== id));
   };
 
   return (
-    <header className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo and Navigation */}
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <NavLink to="/" className="flex items-center">
-                <Logo className="h-8 w-auto" />
-                <span className="ml-3 text-xl font-semibold text-gray-900 dark:text-white hidden md:block">
-                  Breast Beacon
-                </span>
-              </NavLink>
-            </div>
+    <motion.header
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className={cn(
+        "fixed top-0 z-40 w-full border-b transition-all duration-300",
+        scrolled
+          ? "bg-background/80 backdrop-blur-sm border-border/10"
+          : "bg-background border-border/0",
+        theme === "dark" ? "dark" : ""
+      )}
+    >
+      <div className="flex h-16 items-center px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-x-4">
+          <button
+            type="button"
+            className="-m-2.5 p-2.5 text-gray-700 dark:text-gray-300"
+            onClick={toggleSidebar}
+            aria-label="Toggle sidebar"
+          >
+            <span className="sr-only">Open sidebar</span>
+            {sidebarOpen ? (
+              <X className="h-6 w-6" aria-hidden="true" />
+            ) : (
+              <Menu className="h-6 w-6" aria-hidden="true" />
+            )}
+          </button>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex ml-10 space-x-8">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `relative px-1 py-2 text-sm font-medium transition-colors
-                    ${
-                      isActive
-                        ? "text-primary dark:text-primary"
-                        : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                    }`
-                  }
-                >
-                  {({ isActive }) => (
-                    <>
-                      {item.label}
-                      {isActive && (
-                        <motion.div
-                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                          layoutId="headerActiveIndicator"
-                          transition={{
-                            type: "spring",
-                            stiffness: 300,
-                            damping: 30,
-                          }}
-                        />
-                      )}
-                    </>
-                  )}
-                </NavLink>
-              ))}
-            </nav>
-          </div>
+          <Link to="/" className="flex items-center gap-2">
+            <Logo className="h-8 w-8" />
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+              BreastCare AI
+            </span>
+          </Link>
+        </div>
 
-          {/* Right Controls */}
-          <div className="flex items-center space-x-4">
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label={
-                isDarkMode ? "Switch to light mode" : "Switch to dark mode"
-              }
-            >
-              {isDarkMode ? (
-                <FiSun className="h-5 w-5" />
-              ) : (
-                <FiMoon className="h-5 w-5" />
-              )}
-            </button>
+        <div className="flex flex-1 justify-end gap-x-4">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? (
+              <Sun className="h-5 w-5 text-yellow-400" />
+            ) : (
+              <Moon className="h-5 w-5 text-gray-700" />
+            )}
+          </button>
 
-            {/* Profile Dropdown */}
-            <div className="relative ml-2">
+          {/* Notifications Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <button
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center text-sm rounded-full focus:outline-none"
-                aria-expanded={isProfileOpen}
-                aria-label="User menu"
+                type="button"
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 relative transition-colors"
+                aria-label="Notifications"
               >
-                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <FiUser className="h-4 w-4" />
-                </div>
-                <FiChevronDown
-                  className={`ml-1 h-4 w-4 text-gray-500 dark:text-gray-400 transition-transform ${
-                    isProfileOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-
-              <AnimatePresence>
-                {isProfileOpen && (
-                  <motion.div
-                    className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black/5 dark:ring-white/10 focus:outline-none z-50"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.15 }}
-                  >
-                    <div className="py-1">
-                      <button
-                        onClick={() => {
-                          navigate("/profile");
-                          setIsProfileOpen(false);
-                        }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      >
-                        Your Profile
-                      </button>
-                      <button
-                        onClick={() => {
-                          navigate("/logout");
-                          setIsProfileOpen(false);
-                        }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      >
-                        Sign out
-                      </button>
-                    </div>
-                  </motion.div>
+                <Bell className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+                {hasNotifications && (
+                  <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
                 )}
-              </AnimatePresence>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            >
-              {isMenuOpen ? (
-                <FiX className="h-6 w-6" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-64" align="end">
+              <div className="px-2 py-1.5 text-sm font-semibold">
+                Notifications
+              </div>
+              {notifications.length > 0 ? (
+                notifications.map((notification) => (
+                  <DropdownMenuItem
+                    key={notification.id}
+                    className={cn(
+                      "cursor-pointer",
+                      !notification.read && "bg-gray-100 dark:bg-gray-800"
+                    )}
+                    onClick={() => {
+                      markNotificationAsRead(notification.id);
+                      navigate(notification.link);
+                    }}
+                  >
+                    <div className="flex flex-col">
+                      <span>{notification.text}</span>
+                      <span className="text-xs text-gray-500">Just now</span>
+                    </div>
+                  </DropdownMenuItem>
+                ))
               ) : (
-                <FiMenu className="h-6 w-6" />
+                <DropdownMenuItem disabled className="text-sm">
+                  No new notifications
+                </DropdownMenuItem>
               )}
-            </button>
-          </div>
+              <DropdownMenuItem
+                className="text-sm text-center text-primary cursor-pointer"
+                onClick={() => navigate("/notifications")}
+              >
+                View all
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Messages Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 relative transition-colors"
+                aria-label="Messages"
+              >
+                <MessageSquare className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+                {hasMessages && (
+                  <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-blue-500"></span>
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-64" align="end">
+              <div className="px-2 py-1.5 text-sm font-semibold">Messages</div>
+              {messages.length > 0 ? (
+                messages.map((message) => (
+                  <DropdownMenuItem
+                    key={message.id}
+                    className={cn(
+                      "cursor-pointer",
+                      !message.read && "bg-gray-100 dark:bg-gray-800"
+                    )}
+                    onClick={() => {
+                      markMessageAsRead(message.id);
+                      navigate(message.link);
+                    }}
+                  >
+                    <div className="flex flex-col">
+                      <span>{message.text}</span>
+                      <span className="text-xs text-gray-500">2 min ago</span>
+                    </div>
+                  </DropdownMenuItem>
+                ))
+              ) : (
+                <DropdownMenuItem disabled className="text-sm">
+                  No new messages
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem
+                className="text-sm text-center text-primary cursor-pointer"
+                onClick={() => navigate("/messages")}
+              >
+                View all
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Profile Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="User profile"
+              >
+                <User className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48" align="end">
+              <DropdownMenuItem onClick={() => navigate("/profile")}>
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/settings")}>
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/logout")}>
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `block px-3 py-2 rounded-md text-base font-medium
-                    ${
-                      isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    }`
-                  }
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </header>
+    </motion.header>
   );
 };
 

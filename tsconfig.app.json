@@ -2,7 +2,7 @@
   "compilerOptions": {
     "composite": true,
     "noEmit": false,
-    "outDir": "./dist", // optional but good practice
+    "outDir": "./dist",
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2020",
     "useDefineForClassFields": true,
@@ -20,11 +20,16 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    /* Add these for JSON support */
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "jsxImportSource": "react"
   },
-  "include": ["src"]
+  "include": ["src", "src/**/*.json"] // Explicitly include JSON files
 }

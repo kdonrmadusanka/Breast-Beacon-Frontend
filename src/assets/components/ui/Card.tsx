@@ -18,6 +18,7 @@ interface CardProps {
   className?: string;
   onClick?: () => void;
   hoverEffect?: boolean;
+  children?: React.ReactNode; // Add this line
 }
 
 const Card: React.FC<CardProps> = ({
