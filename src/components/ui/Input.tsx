@@ -1,7 +1,7 @@
 import React, { type ChangeEvent, forwardRef } from 'react';
 
 type InputProps = {
-  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search';
+  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search' | 'date';
   name: string;
   value?: string | number;
   defaultValue?: string | number;
@@ -22,6 +22,8 @@ type InputProps = {
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
   icon?: React.ReactNode;
   iconPosition?: 'left' | 'right';
+  min?: string; // Added for date type
+  max?: string; // Added for date type
 };
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -48,9 +50,35 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       onFocus,
       icon,
       iconPosition = 'left',
+      min, // New prop for minimum date
+      max, // New prop for maximum date
     },
     ref
   ) => {
+    // Format value for date input (YYYY-MM-DD format required by HTML5 date input)
+    const formatDateValue = (val: string | number | undefined): string | number | undefined => {
+      if (type === 'date' && val) {
+        // If it's a date type and has value, ensure it's in YYYY-MM-DD format
+        if (typeof val === 'string') {
+          // Try to parse and format the date string
+          const date = new Date(val);
+          if (!isNaN(date.getTime())) {
+            return date.toISOString().split('T')[0];
+          }
+        } else if (typeof val === 'number') {
+          // Handle timestamp
+          const date = new Date(val);
+          if (!isNaN(date.getTime())) {
+            return date.toISOString().split('T')[0];
+          }
+        }
+      }
+      return val;
+    };
+
+    const formattedValue = formatDateValue(value);
+    const formattedDefaultValue = formatDateValue(defaultValue);
+
     return (
       <div className={`flex flex-col ${className}`}>
         {label && (
@@ -75,8 +103,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             type={type}
             id={name}
             name={name}
-            value={value}
-            defaultValue={defaultValue}
+            value={formattedValue}
+            defaultValue={formattedDefaultValue}
             placeholder={placeholder}
             disabled={disabled}
             required={required}
@@ -86,11 +114,17 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             onChange={onChange}
             onBlur={onBlur}
             onFocus={onFocus}
-            className={`${className} border-2 w-full px-3 py-2 border ${
-              error ? 'border-red-500' : 'border-black'
-            } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              icon && iconPosition === 'left' ? 'pl-10' : ''
-            } ${icon && iconPosition === 'right' ? 'pr-10' : ''} ${inputClassName}`}
+            min={min} // For date type: minimum allowed date (YYYY-MM-DD)
+            max={max} // For date type: maximum allowed date (YYYY-MM-DD)
+            className={`
+              w-full px-3 py-2 border-2 rounded-md shadow-sm 
+              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+              ${error ? 'border-red-500' : 'border-black'}
+              ${icon && iconPosition === 'left' ? 'pl-10' : ''}
+              ${icon && iconPosition === 'right' ? 'pr-10' : ''}
+              ${type === 'date' ? 'pr-3' : ''} // Extra padding for date picker icon
+              ${inputClassName}
+            `}
           />
 
           {icon && iconPosition === 'right' && (
