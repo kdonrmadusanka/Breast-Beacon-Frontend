@@ -1,0 +1,506 @@
+<!-- src/app/components/signup/signup.component.html -->
+<div
+  class="min-h-screen bg-gradient-to-br from-medical-50 to-primary-50 py-12 px-4 sm:px-6 lg:px-8"
+>
+  <div class="max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <a routerLink="/" class="inline-flex items-center space-x-3 mb-6">
+        <div class="w-10 h-10 bg-gradient-medical rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+            />
+          </svg>
+        </div>
+        <span class="text-2xl font-bold text-gradient">BreastBeacon</span>
+      </a>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Create Your Account</h1>
+      <p class="text-gray-600">Join thousands of healthcare professionals and patients</p>
+    </div>
+
+    <!-- Signup Card -->
+    <div class="card p-8">
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Basic Information Section -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+            Basic Information
+          </h3>
+
+          <!-- Name Row -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- First Name -->
+            <div>
+              <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">
+                First Name *
+              </label>
+              <input
+                id="firstName"
+                type="text"
+                formControlName="firstName"
+                class="input-field"
+                placeholder="Enter your first name"
+                [class.border-error-500]="
+                  formControls['firstName'].touched && formControls['firstName'].invalid
+                "
+              />
+              @if (formControls['firstName'].touched && formControls['firstName'].invalid) {
+              <div class="mt-1 text-sm text-error-600">
+                @if (formControls['firstName'].errors?.['required']) {
+                <div>First name is required</div>
+                } @if (formControls['firstName'].errors?.['minlength']) {
+                <div>First name must be at least 2 characters</div>
+                } @if (formControls['firstName'].errors?.['maxlength']) {
+                <div>First name cannot exceed 50 characters</div>
+                }
+              </div>
+              }
+            </div>
+
+            <!-- Last Name -->
+            <div>
+              <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">
+                Last Name *
+              </label>
+              <input
+                id="lastName"
+                type="text"
+                formControlName="lastName"
+                class="input-field"
+                placeholder="Enter your last name"
+                [class.border-error-500]="
+                  formControls['lastName'].touched && formControls['lastName'].invalid
+                "
+              />
+              @if (formControls['lastName'].touched && formControls['lastName'].invalid) {
+              <div class="mt-1 text-sm text-error-600">
+                @if (formControls['lastName'].errors?.['required']) {
+                <div>Last name is required</div>
+                } @if (formControls['lastName'].errors?.['minlength']) {
+                <div>Last name must be at least 2 characters</div>
+                } @if (formControls['lastName'].errors?.['maxlength']) {
+                <div>Last name cannot exceed 50 characters</div>
+                }
+              </div>
+              }
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+              Email Address *
+            </label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              class="input-field"
+              placeholder="Enter your email address"
+              [class.border-error-500]="
+                formControls['email'].touched && formControls['email'].invalid
+              "
+            />
+            @if (formControls['email'].touched && formControls['email'].invalid) {
+            <div class="mt-1 text-sm text-error-600">
+              @if (formControls['email'].errors?.['required']) {
+              <div>Email is required</div>
+              } @if (formControls['email'].errors?.['email']) {
+              <div>Please enter a valid email address</div>
+              }
+            </div>
+            }
+          </div>
+
+          <!-- Password Row -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Password -->
+            <div>
+              <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+                Password *
+              </label>
+              <input
+                id="password"
+                type="password"
+                formControlName="password"
+                class="input-field"
+                placeholder="Create a password"
+                [class.border-error-500]="
+                  formControls['password'].touched && formControls['password'].invalid
+                "
+              />
+              @if (formControls['password'].touched && formControls['password'].invalid) {
+              <div class="mt-1 text-sm text-error-600">
+                @if (formControls['password'].errors?.['required']) {
+                <div>Password is required</div>
+                } @if (formControls['password'].errors?.['minlength']) {
+                <div>Password must be at least 8 characters</div>
+                }
+              </div>
+              }
+            </div>
+
+            <!-- Confirm Password -->
+            <div>
+              <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">
+                Confirm Password *
+              </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                formControlName="confirmPassword"
+                class="input-field"
+                placeholder="Confirm your password"
+                [class.border-error-500]="
+                  formControls['confirmPassword'].touched && formControls['confirmPassword'].invalid
+                "
+              />
+              @if (formControls['confirmPassword'].touched &&
+              formControls['confirmPassword'].invalid) {
+              <div class="mt-1 text-sm text-error-600">
+                @if (formControls['confirmPassword'].errors?.['required']) {
+                <div>Please confirm your password</div>
+                } @if (formControls['confirmPassword'].errors?.['passwordMismatch']) {
+                <div>Passwords do not match</div>
+                }
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Role Selection Section -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+            Select Your Role
+          </h3>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+              I am registering as *
+            </label>
+
+            <!-- Role Selection Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              @for (role of roles; track role.value) {
+              <div class="relative">
+                <input
+                  [id]="'role-' + role.value"
+                  type="radio"
+                  formControlName="role"
+                  [value]="role.value"
+                  placeholder="role"
+                  class="sr-only"
+                />
+                <label
+                  [for]="'role-' + role.value"
+                  class="flex flex-col p-4 border-2 border-gray-200 rounded-xl cursor-pointer transition-all duration-200 hover:border-medical-300 hover:bg-medical-25"
+                  [class.border-medical-500]="formControls['role'].value === role.value"
+                  [class.bg-medical-50]="formControls['role'].value === role.value"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium text-gray-900">{{ role.label }}</span>
+                    <div
+                      class="w-4 h-4 border-2 border-gray-300 rounded-full flex items-center justify-center"
+                      [class.border-medical-500]="formControls['role'].value === role.value"
+                    >
+                      @if (formControls['role'].value === role.value) {
+                      <div class="w-2 h-2 bg-medical-500 rounded-full"></div>
+                      }
+                    </div>
+                  </div>
+                  <p class="text-sm text-gray-600 mt-1 text-left">{{ role.description }}</p>
+                </label>
+              </div>
+              }
+            </div>
+
+            <!-- Role Description -->
+            <div class="mt-3 p-3 bg-medical-50 rounded-lg border border-medical-200">
+              <p class="text-sm text-medical-800">
+                {{ getSelectedRoleDescription() }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Medical Professional Fields -->
+        @if (showMedicalFields) {
+        <div class="space-y-4" @fadeIn>
+          <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+            Professional Information
+          </h3>
+
+          <!-- License Number -->
+          <div>
+            <label for="licenseNumber" class="block text-sm font-medium text-gray-700 mb-1">
+              License Number *
+            </label>
+            <input
+              id="licenseNumber"
+              type="text"
+              formControlName="licenseNumber"
+              class="input-field"
+              placeholder="Enter your professional license number"
+              [class.border-error-500]="
+                formControls['licenseNumber'].touched && formControls['licenseNumber'].invalid
+              "
+            />
+            @if (formControls['licenseNumber'].touched && formControls['licenseNumber'].invalid) {
+            <div class="mt-1 text-sm text-error-600">
+              @if (formControls['licenseNumber'].errors?.['required']) {
+              <div>License number is required for medical professionals</div>
+              }
+            </div>
+            }
+          </div>
+
+          <!-- Specialization -->
+          <div>
+            <label for="specialization" class="block text-sm font-medium text-gray-700 mb-1">
+              Specialization *
+            </label>
+            <select
+              id="specialization"
+              formControlName="specialization"
+              class="input-field"
+              [class.border-error-500]="
+                formControls['specialization'].touched && formControls['specialization'].invalid
+              "
+            >
+              <option value="">Select your specialization</option>
+              <option value="breast-imaging">Breast Imaging</option>
+              <option value="general-radiology">General Radiology</option>
+              <option value="oncology">Oncology</option>
+              <option value="gynecology">Gynecology</option>
+            </select>
+            @if (formControls['specialization'].touched && formControls['specialization'].invalid) {
+            <div class="mt-1 text-sm text-error-600">
+              @if (formControls['specialization'].errors?.['required']) {
+              <div>Specialization is required for medical professionals</div>
+              }
+            </div>
+            }
+          </div>
+
+          <!-- Institution -->
+          <div>
+            <label for="institution" class="block text-sm font-medium text-gray-700 mb-1">
+              Institution
+            </label>
+            <input
+              id="institution"
+              type="text"
+              formControlName="institution"
+              class="input-field"
+              placeholder="Enter your hospital or institution name"
+            />
+          </div>
+        </div>
+        }
+
+        <!-- Patient Fields -->
+        @if (formControls['role'].value === 'patient') {
+        <div class="space-y-4" @fadeIn>
+          <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+            Patient Information
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Date of Birth -->
+            <div>
+              <label for="dateOfBirth" class="block text-sm font-medium text-gray-700 mb-1">
+                Date of Birth *
+              </label>
+              <input
+                id="dateOfBirth"
+                type="date"
+                formControlName="dateOfBirth"
+                class="input-field"
+                [class.border-error-500]="
+                  formControls['dateOfBirth'].touched && formControls['dateOfBirth'].invalid
+                "
+              />
+              @if (formControls['dateOfBirth'].touched && formControls['dateOfBirth'].invalid) {
+              <div class="mt-1 text-sm text-error-600">
+                @if (formControls['dateOfBirth'].errors?.['required']) {
+                <div>Date of birth is required for patients</div>
+                }
+              </div>
+              }
+            </div>
+
+            <!-- Gender -->
+            <div>
+              <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">
+                Gender *
+              </label>
+              <select
+                id="gender"
+                formControlName="gender"
+                class="input-field"
+                [class.border-error-500]="
+                  formControls['gender'].touched && formControls['gender'].invalid
+                "
+              >
+                <option value="">Select gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+                <option value="prefer-not-to-say">Prefer not to say</option>
+              </select>
+              @if (formControls['gender'].touched && formControls['gender'].invalid) {
+              <div class="mt-1 text-sm text-error-600">
+                @if (formControls['gender'].errors?.['required']) {
+                <div>Gender is required for patients</div>
+                }
+              </div>
+              }
+            </div>
+          </div>
+
+          <!-- Phone Number -->
+          <div>
+            <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-1">
+              Phone Number *
+            </label>
+            <input
+              id="phoneNumber"
+              type="tel"
+              formControlName="phoneNumber"
+              class="input-field"
+              placeholder="Enter your phone number"
+              [class.border-error-500]="
+                formControls['phoneNumber'].touched && formControls['phoneNumber'].invalid
+              "
+            />
+            @if (formControls['phoneNumber'].touched && formControls['phoneNumber'].invalid) {
+            <div class="mt-1 text-sm text-error-600">
+              @if (formControls['phoneNumber'].errors?.['required']) {
+              <div>Phone number is required for patients</div>
+              }
+            </div>
+            }
+          </div>
+
+          <!-- Address -->
+          <div>
+            <label for="address" class="block text-sm font-medium text-gray-700 mb-1">
+              Address *
+            </label>
+            <textarea
+              id="address"
+              formControlName="address"
+              rows="3"
+              class="input-field resize-none"
+              placeholder="Enter your full address"
+              [class.border-error-500]="
+                formControls['address'].touched && formControls['address'].invalid
+              "
+            ></textarea>
+            @if (formControls['address'].touched && formControls['address'].invalid) {
+            <div class="mt-1 text-sm text-error-600">
+              @if (formControls['address'].errors?.['required']) {
+              <div>Address is required for patients</div>
+              }
+            </div>
+            }
+          </div>
+        </div>
+        }
+
+        <!-- Admin Fields -->
+        @if (formControls['role'].value === 'admin') {
+        <div class="space-y-4" @fadeIn>
+          <h3 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+            Admin Information
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Admin Id -->
+            <div>
+              <label for="adminId" class="block text-sm font-medium text-gray-700 mb-1">
+                Admin ID / Employee Number *
+              </label>
+              <input
+                id="adminId"
+                type="text"
+                formControlName="adminId"
+                class="input-field"
+                [class.border-error-500]="
+                  formControls['adminId'].touched && formControls['adminId'].invalid
+                "
+              />
+              @if (formControls['adminId'].touched && formControls['adminId'].invalid) {
+              <div class="mt-1 text-sm text-error-600">
+                @if (formControls['adminId'].errors?.['required']) {
+                <div>Admin ID is required for administrators</div>
+                }
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+        }
+
+        <!-- Submit Button -->
+        <div class="pt-4">
+          <button
+            type="submit"
+            [disabled]="isLoading || signupForm.invalid"
+            class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <div class="flex items-center justify-center space-x-2">
+              @if (!isLoading) {
+              <span>Create Account</span>
+              } @else {
+              <span>Creating Account...</span>
+              <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              }
+            </div>
+          </button>
+        </div>
+
+        <!-- Login Link -->
+        <div class="text-center pt-4 border-t border-gray-200">
+          <p class="text-gray-600">
+            Already have an account?
+            <button
+              type="button"
+              (click)="navigateToLogin()"
+              class="text-medical-600 hover:text-medical-700 font-medium transition-colors"
+            >
+              Sign in here
+            </button>
+          </p>
+        </div>
+      </form>
+    </div>
+
+    <!-- Security Notice -->
+    <div class="mt-6 text-center">
+      <p class="text-xs text-gray-500">
+        Your information is secured with enterprise-grade encryption and complies with HIPAA
+        regulations.
+      </p>
+    </div>
+  </div>
+</div>

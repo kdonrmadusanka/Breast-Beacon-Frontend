@@ -1,1 +1,120 @@
-/* You can add global styles to this file, and also import other style files */
+/* src/styles.css */
+/* Import Inter font FIRST */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Then import Tailwind */
+@import 'tailwindcss';
+
+@theme {
+  /* Custom Colors for Medical Imaging App */
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #0ea5e9;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075985;
+  --color-primary-900: #0c4a6e;
+
+  /* Medical Blue Theme */
+  --color-medical-50: #eff6ff;
+  --color-medical-100: #dbeafe;
+  --color-medical-200: #bfdbfe;
+  --color-medical-300: #93c5fd;
+  --color-medical-400: #60a5fa;
+  --color-medical-500: #3b82f6;
+  --color-medical-600: #2563eb;
+  --color-medical-700: #1d4ed8;
+  --color-medical-800: #1e40af;
+  --color-medical-900: #1e3a8a;
+
+  /* Success Colors */
+  --color-success-500: #10b981;
+  --color-success-600: #059669;
+
+  /* Warning Colors */
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+
+  /* Error Colors */
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+
+  /* Custom Fonts */
+  --font-heading: 'Inter', 'system-ui', 'sans-serif';
+  --font-body: 'Inter', 'system-ui', 'sans-serif';
+
+  /* Custom Spacing */
+  --spacing-7: 1.75rem;
+  --spacing-18: 4.5rem;
+  --spacing-88: 22rem;
+
+  /* Custom Border Radius */
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+
+  /* Custom Box Shadows */
+  --shadow-soft: 0 2px 15px -3px rgb(0 0 0 / 0.1), 0 2px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-card: 0 4px 25px -5px rgb(0 0 0 / 0.1), 0 2px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* Custom components using the new theme variables */
+@layer components {
+  .btn-primary {
+    @apply bg-medical-500 hover:bg-medical-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-medical-500 focus:ring-offset-2 shadow-sm hover:shadow-md;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-medical-600 font-semibold py-3 px-6 rounded-xl border border-medical-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-medical-500 focus:ring-offset-2 shadow-sm hover:shadow-md;
+  }
+
+  .btn-outline {
+    @apply bg-transparent hover:bg-medical-500 text-medical-600 hover:text-white font-semibold py-3 px-6 rounded-xl border-2 border-medical-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-medical-500 focus:ring-offset-2;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-medical-500 focus:border-transparent transition-all duration-200 shadow-sm;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-card border border-gray-100;
+  }
+
+  .section-padding {
+    @apply pt-25 pb-18 px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* Custom base styles */
+@layer base {
+  html {
+    font-family: var(--font-body);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+  }
+
+  body {
+    @apply text-gray-900 bg-gray-50;
+  }
+}
+
+/* Custom utilities */
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-medical-600 to-primary-600 bg-clip-text text-transparent;
+  }
+
+  .bg-gradient-medical {
+    @apply bg-gradient-to-br from-medical-500 to-primary-600;
+  }
+}
