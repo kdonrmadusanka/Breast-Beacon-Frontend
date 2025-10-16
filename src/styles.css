@@ -61,6 +61,18 @@
   --shadow-card: 0 4px 25px -5px rgb(0 0 0 / 0.1), 0 2px 10px -6px rgb(0 0 0 / 0.1);
 }
 
+@keyframes progress {
+  0% {
+    width: 0%;
+  }
+  50% {
+    width: 70%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
 /* Custom components using the new theme variables */
 @layer components {
   .btn-primary {
@@ -117,4 +129,17 @@
   .bg-gradient-medical {
     @apply bg-gradient-to-br from-medical-500 to-primary-600;
   }
+}
+
+.animate-progress {
+  animation: progress 3s ease-in-out infinite;
+}
+
+/* Success State Styles */
+.verification-success {
+  @apply text-success-600;
+}
+
+.verification-error {
+  @apply text-error-600;
 }
