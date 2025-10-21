@@ -1,0 +1,113 @@
+<!-- src/app/components/verify-email/verify-email.component.html -->
+<div
+  class="min-h-screen bg-gradient-to-br from-medical-50 to-primary-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
+>
+  <div class="max-w-md w-full">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <a routerLink="/" class="inline-flex items-center space-x-3 mb-6">
+        <div class="w-12 h-12 bg-gradient-medical rounded-xl flex items-center justify-center">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+            />
+          </svg>
+        </div>
+        <span class="text-2xl font-bold text-gradient">BreastBeacon</span>
+      </a>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Verifying Your Email</h1>
+      <p class="text-gray-600">Please wait while we confirm your email address</p>
+    </div>
+
+    <!-- Verification Card -->
+    <div class="card p-8">
+      <!-- Animated Loading -->
+      <div class="text-center space-y-6">
+        <!-- Animated Icon -->
+        <div class="relative">
+          <div
+            class="w-20 h-20 bg-medical-100 rounded-2xl flex items-center justify-center mx-auto mb-4"
+          >
+            <svg
+              class="w-10 h-10 text-medical-600 animate-pulse"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
+            </svg>
+          </div>
+
+          <!-- Pulsing Ring -->
+          <div
+            class="absolute inset-0 rounded-2xl border-2 border-medical-200 animate-ping opacity-75"
+          ></div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="space-y-3">
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div class="bg-medical-600 h-2 rounded-full animate-progress"></div>
+          </div>
+          <p class="text-sm text-gray-500">Processing verification...</p>
+        </div>
+
+        <!-- Status Messages -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-center space-x-3 text-sm text-gray-600">
+            <div class="w-2 h-2 bg-medical-500 rounded-full animate-pulse"></div>
+            <span>Checking verification link</span>
+          </div>
+          <div class="flex items-center justify-center space-x-3 text-sm text-gray-600">
+            <div
+              class="w-2 h-2 bg-medical-500 rounded-full animate-pulse"
+              style="animation-delay: 0.2s"
+            ></div>
+            <span>Validating your account</span>
+          </div>
+          <div class="flex items-center justify-center space-x-3 text-sm text-gray-600">
+            <div
+              class="w-2 h-2 bg-medical-500 rounded-full animate-pulse"
+              style="animation-delay: 0.4s"
+            ></div>
+            <span>Completing setup</span>
+          </div>
+        </div>
+
+        <!-- Countdown Timer -->
+        <div class="pt-4">
+          <p class="text-sm text-gray-500">This should only take a few seconds...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help Text -->
+    <div class="mt-6 text-center">
+      <p class="text-sm text-gray-500">
+        Having trouble?
+        <button
+          (click)="resendVerification()"
+          class="text-medical-600 hover:text-medical-700 font-medium ml-1"
+        >
+          Resend verification email
+        </button>
+      </p>
+    </div>
+
+    <!-- Security Notice -->
+    <div class="mt-6 text-center">
+      <p class="text-xs text-gray-400">
+        Your information is secured with enterprise-grade encryption and complies with HIPAA
+        regulations.
+      </p>
+    </div>
+  </div>
+</div>

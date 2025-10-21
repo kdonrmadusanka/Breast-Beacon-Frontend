@@ -1,7 +1,8 @@
 import { RouterModule, Routes } from '@angular/router';
-import { NgModule } from '@angular/core';
 import { Signup } from './components/signup/signup';
 import { LandingPage } from './components/landing-page/landing-page';
+import { RadiologistDashboardComponent } from './dashboards/radiologist-dashboard/components/dashboard/dashboard';
+import { Verify } from './pages/verify/verify';
 
 export const routes: Routes = [
   {
@@ -19,6 +20,16 @@ export const routes: Routes = [
   //   component: LoginComponent,
   //   data: { title: 'Sign In - BreastBeacon' }
   // },
+  {
+    path: 'verify-email',
+    component: Verify,
+    data: { title: 'Verify Email - BreastBeacon' },
+  },
+  {
+    path: 'dashboard',
+    component: RadiologistDashboardComponent,
+    data: { title: 'Radiologist Dashboard' },
+  },
   {
     path: '**',
     redirectTo: '',

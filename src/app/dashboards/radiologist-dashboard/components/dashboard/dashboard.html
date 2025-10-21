@@ -1,0 +1,565 @@
+<div class="p-6 bg-medical-50 min-h-screen font-sans">
+  <!-- Header -->
+  <header class="mb-6 flex items-center justify-between">
+    <h1 class="text-3xl font-semibold text-medical-700">Radiologist Dashboard</h1>
+
+    <div class="flex space-x-4 items-center">
+      <input
+        type="text"
+        placeholder="Search patient..."
+        [ngModel]="searchQuery()"
+        (input)="onSearch()"
+        class="input-field max-w-xs"
+      />
+
+      <button
+        class="btn-primary"
+        (click)="loadDashboardData()"
+        [disabled]="isLoading()"
+        aria-label="Refresh Dashboard"
+        title="Refresh Dashboard"
+      >
+        Refresh
+      </button>
+    </div>
+  </header>
+
+  <!-- Dashboard Statistics -->
+  <section class="mb-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <div class="card p-4 text-center">
+      <h2 class="text-lg font-medium text-medical-600">Total Cases</h2>
+      <p class="text-3xl font-bold text-medical-700">{{ totalCases() }}</p>
+    </div>
+    <div class="card p-4 text-center">
+      <h2 class="text-lg font-medium text-medical-600">Items Per Page</h2>
+      <p class="text-3xl font-bold text-medical-700">{{ itemsPerPage() }}</p>
+    </div>
+    <div class="card p-4 text-center">
+      <h2 class="text-lg font-medium text-medical-600">Current Page</h2>
+      <p class="text-3xl font-bold text-medical-700">{{ currentPage() }}</p>
+    </div>
+  </section>
+
+  <!-- Filters -->
+  <section class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+    <label class="block">
+      <span class="sr-only">Filter by Study Type</span>
+      <select
+        aria-label="Study Type"
+        class="input-field"
+        [ngModel]="filters().studyType"
+        (change)="onFilterChange()"
+      >
+        <option value="">{{ studyTypeOptions[0].label }}</option>
+        @for (option of studyTypeOptions.slice(1); track option.value) {
+        <option [value]="option.value">
+          {{ option.label }}
+        </option>
+        }
+      </select>
+    </label>
+
+    <label class="block">
+      <span class="sr-only">Filter by Priority</span>
+      <select
+        aria-label="Priority"
+        class="input-field"
+        [ngModel]="filters().priority"
+        (change)="onFilterChange()"
+      >
+        <option value="">{{ priorityOptions[0].label }}</option>
+        @for (option of priorityOptions.slice(1); track option.value) {
+        <option [value]="option.value">
+          {{ option.label }}
+        </option>
+        }
+      </select>
+    </label>
+
+    <label class="block">
+      <span class="sr-only">Filter by Status</span>
+      <select
+        aria-label="Status"
+        class="input-field"
+        [ngModel]="filters().status"
+        (change)="onFilterChange()"
+      >
+        <option value="">{{ statusOptions[0].label }}</option>
+        @for (option of statusOptions.slice(1); track option.value) {
+        <option [value]="option.value">
+          {{ option.label }}
+        </option>
+        }
+      </select>
+    </label>
+
+    <label class="block">
+      <span class="sr-only">Items per Page</span>
+      <select
+        aria-label="Items per Page"
+        class="input-field"
+        [ngModel]="itemsPerPage()"
+        (change)="onFilterChange()"
+      >
+        @for (size of [10, 20, 50]; track size) {
+        <option [value]="size">{{ size }}</option>
+        }
+      </select>
+    </label>
+  </section>
+
+  <!-- Loading Spinner -->
+  @if (isLoading()) {
+  <div class="flex justify-center py-12">
+    <mat-progress-spinner diameter="50" mode="indeterminate" color="primary"></mat-progress-spinner>
+  </div>
+  }
+
+  <!-- Cases Table -->
+  @if (!isLoading()) {
+  <table
+    class="min-w-full border-collapse border border-gray-200 shadow-md rounded-xl overflow-hidden"
+  >
+    <thead class="bg-medical-200 text-medical-900 font-semibold text-sm">
+      <tr>
+        <th class="border border-gray-300 px-4 py-2 text-left">Patient</th>
+        <th class="border border-gray-300 px-4 py-2 text-left">Study Type</th>
+        <th class="border border-gray-300 px-4 py-2 text-center">Priority</th>
+        <th class="border border-gray-300 px-4 py-2 text-center">Status</th>
+        <th class="border border-gray-300 px-4 py-2 text-center">Due Date</th>
+        <th class="border border-gray-300 px-4 py-2 text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white text-gray-900 text-sm">
+      @for (c of cases(); track c.id) {
+      <tr
+        class="hover:bg-medical-50 cursor-pointer transition-colors duration-200"
+        (click)="onSelectCase(c)"
+      >
+        <td class="border border-gray-300 px-4 py-2">{{ c.patientName }}</td>
+        <td class="border border-gray-300 px-4 py-2 capitalize">{{ c.studyType }}</td>
+        <td class="border border-gray-300 px-4 py-2 text-center">
+          <span [ngClass]="getPriorityBadgeClass(c.priority)" class="px-3 py-1 rounded-full">
+            {{ c.priority }}
+          </span>
+        </td>
+        <td class="border border-gray-300 px-4 py-2 text-center">
+          <span [ngClass]="getStatusBadgeClass(c.status)" class="px-3 py-1 rounded-full">
+            {{ c.status }}
+          </span>
+        </td>
+        <td class="border border-gray-300 px-4 py-2 text-center">
+          {{ c.dueDate | date : 'mediumDate' }}
+        </td>
+        <td class="border border-gray-300 px-4 py-2 text-center space-x-2">
+          <button
+            class="btn-outline"
+            (click)="onAssignToMe(c.id); $event.stopPropagation()"
+            title="Assign to me"
+          >
+            Assign
+          </button>
+          <button
+            class="btn-primary"
+            (click)="
+              onUpdateStatus(c.id, c.status === 'completed' ? 'pending' : 'completed');
+              $event.stopPropagation()
+            "
+            title="Toggle Status"
+          >
+            {{ c.status === 'completed' ? 'Reopen' : 'Complete' }}
+          </button>
+        </td>
+      </tr>
+      } @if (cases().length === 0) {
+      <tr class="text-center text-gray-500">
+        <td colspan="6" class="py-8">No cases found.</td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  }
+
+  <!-- Pagination -->
+  @if (totalPages() > 1) {
+  <div class="flex justify-center my-6 space-x-2">
+    <button
+      class="btn-secondary"
+      [disabled]="currentPage() <= 1"
+      (click)="onPageChange(currentPage() - 1)"
+      title="Previous Page"
+    >
+      Previous
+    </button>
+    @for (page of pages; track page) {
+    <button
+      class="px-3 py-1 rounded-md border border-medical-400 hover:bg-medical-400 hover:text-white transition"
+      [class.font-bold]="currentPage() === page"
+      (click)="onPageChange(page)"
+    >
+      {{ page }}
+    </button>
+    }
+    <button
+      class="btn-secondary"
+      [disabled]="currentPage() >= totalPages()"
+      (click)="onPageChange(currentPage() + 1)"
+      title="Next Page"
+    >
+      Next
+    </button>
+  </div>
+  }
+
+  <!-- Case Detail Modal -->
+  @if (showCaseDetail()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="card p-6 max-w-4xl mx-auto">
+      <h2 class="text-xl font-semibold mb-4 text-medical-700">
+        Case Detail - {{ currentCase()?.patientName }}
+      </h2>
+      <!-- Add more case detail data here -->
+      <button class="btn-primary" (click)="closeCaseDetail()">Close</button>
+    </div>
+  </div>
+  } @if (showCaseDetail()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="card p-6 max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-medical-700">
+          Case Details - {{ currentCase()?.patientName }}
+        </h2>
+        <button (click)="closeCaseDetail()" class="text-gray-500 hover:text-gray-700">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Patient Information -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="space-y-4">
+          <h3 class="text-lg font-semibold text-medical-600">Patient Information</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm text-gray-600">Patient Name</label>
+              <p class="font-medium">{{ currentCase()?.patientName }}</p>
+            </div>
+            <div>
+              <label class="text-sm text-gray-600">Patient ID</label>
+              <p class="font-medium">{{ currentCase()?.patientId }}</p>
+            </div>
+            <div>
+              <label class="text-sm text-gray-600">Age</label>
+              <p class="font-medium">{{ currentCase()?.age }}</p>
+            </div>
+            <div>
+              <label class="text-sm text-gray-600">Study Type</label>
+              <p class="font-medium capitalize">{{ currentCase()?.studyType }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case Actions -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-semibold text-medical-600">Case Actions</h3>
+          <div class="flex flex-wrap gap-2">
+            <button class="btn-primary" (click)="onCreateReport()">Create Report</button>
+            <button class="btn-secondary" (click)="openTemplatesModal()">Use Template</button>
+            <button class="btn-outline" (click)="onExportReport()">Export Report</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Images Section -->
+      @if (currentCase()?.images && currentCase()!.images.length > 0) {
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-medical-600 mb-4">Medical Images</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          @for (image of currentCase()!.images; track image.id) {
+          <div
+            class="border rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+            (click)="onViewImage(image)"
+          >
+            <img
+              [src]="image.thumbnailUrl"
+              [alt]="'Medical image for ' + currentCase()?.patientName"
+              [title]="'Medical image for ' + currentCase()?.patientName"
+              alt="Medical image"
+              title="Medical image"
+              class="w-full h-32 object-cover max-w-full max-h-full mx-auto object-contain"
+              (click)="onImageClick($event)"
+            />
+
+            <div class="p-2 text-xs text-gray-600">
+              {{ image.metadata.modality }} - {{ image.metadata.studyDate | date : 'shortDate' }}
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Current Report Preview -->
+      @if (currentReport()) {
+      <div class="border-t pt-6">
+        <h3 class="text-lg font-semibold text-medical-600 mb-4">Current Report</h3>
+        <div class="space-y-3">
+          <div>
+            <label class="text-sm font-medium text-gray-700">BI-RADS Score</label>
+            <span
+              [ngClass]="getBiradsScoreClass(currentReport()!.biradsScore)"
+              class="px-3 py-1 rounded-full text-sm ml-2"
+            >
+              {{ currentReport()!.biradsScore }}
+            </span>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-700">Findings</label>
+            <p class="mt-1 text-gray-900">{{ currentReport()!.findings }}</p>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-700">Impression</label>
+            <p class="mt-1 text-gray-900">{{ currentReport()!.impression }}</p>
+          </div>
+        </div>
+      </div>
+      }
+
+      <div class="flex justify-end mt-6">
+        <button class="btn-primary" (click)="closeCaseDetail()">Close</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Report Modal -->
+  @if (showReportModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="card p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-medical-700">
+          {{ currentReport() ? 'Edit Report' : 'Create Report' }} - {{ currentCase()?.patientName }}
+        </h2>
+        <button (click)="closeReportModal()" class="text-gray-500 hover:text-gray-700">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <form class="space-y-6">
+        <!-- BI-RADS Score -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            BI-RADS Assessment Category *
+          </label>
+          <select
+            aria-label="BIRADS Score"
+            class="input-field w-full"
+            [ngModel]="reportForm().biradsScore"
+            (ngModelChange)="updateReportFormField('biradsScore', $event)"
+            name="biradsScore"
+            required
+          >
+            <option value="">Select BI-RADS Category</option>
+            <option value="0">BI-RADS 0: Incomplete - Need additional imaging</option>
+            <option value="1">BI-RADS 1: Negative</option>
+            <option value="2">BI-RADS 2: Benign</option>
+            <option value="3">BI-RADS 3: Probably Benign</option>
+            <option value="4">BI-RADS 4: Suspicious</option>
+            <option value="5">BI-RADS 5: Highly Suggestive of Malignancy</option>
+            <option value="6">BI-RADS 6: Known Biopsy-Proven Malignancy</option>
+          </select>
+        </div>
+
+        <!-- Findings -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2"> Findings </label>
+          <textarea
+            [ngModel]="reportForm().findings"
+            (ngModelChange)="updateReportFormField('findings', $event)"
+            name="findings"
+            rows="6"
+            placeholder="Describe the imaging findings..."
+            class="input-field w-full"
+          ></textarea>
+        </div>
+
+        <!-- Impression -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2"> Impression </label>
+          <textarea
+            [ngModel]="reportForm().findings"
+            (ngModelChange)="updateReportFormField('findings', $event)"
+            name="findings"
+            rows="6"
+            placeholder="Describe the imaging findings..."
+            class="input-field w-full"
+          ></textarea>
+        </div>
+
+        <!-- Recommendations -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2"> Recommendations </label>
+          <textarea
+            [ngModel]="reportForm().findings"
+            (ngModelChange)="updateReportFormField('findings', $event)"
+            name="findings"
+            rows="6"
+            placeholder="Describe the imaging findings..."
+            class="input-field w-full"
+          ></textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-between pt-6 border-t border-gray-200">
+          <div class="flex space-x-2">
+            <button type="button" (click)="openTemplatesModal()" class="btn-outline">
+              Use Template
+            </button>
+            <button
+              type="button"
+              (click)="onSaveReport()"
+              class="btn-primary"
+              [disabled]="!reportForm().biradsScore || isUpdating()"
+            >
+              @if (isUpdating()) {
+              <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+              } Save Draft
+            </button>
+          </div>
+          <button
+            type="button"
+            (click)="onFinalizeReport()"
+            class="btn-primary bg-green-600 hover:bg-green-700"
+            [disabled]="!reportForm().biradsScore || isUpdating()"
+          >
+            Finalize Report
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+
+  <!-- Image Viewer Modal -->
+  @if (showImageModal() && selectedImage()) {
+  <div class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+    <div class="w-full h-full flex flex-col">
+      <!-- Toolbar -->
+      <div class="bg-gray-800 text-white p-4 flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+          <h3 class="text-lg font-semibold">{{ selectedImage()?.metadata?.patientName }}</h3>
+          <span class="text-sm text-gray-300">{{ selectedImage()?.metadata?.modality }}</span>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- Annotation Tools -->
+          @for (tool of annotationTools; track tool.type) {
+          <button
+            (click)="selectedTool.set(tool.type)"
+            [class.bg-blue-600]="selectedTool() === tool.type"
+            class="p-2 rounded hover:bg-gray-700 transition-colors"
+            [title]="tool.label"
+          >
+            {{ tool.icon }}
+          </button>
+          }
+
+          <!-- Color Picker -->
+          <input
+            type="color"
+            [value]="annotationColor()"
+            (input)="annotationColor.set($event.target.value)"
+            class="w-8 h-8 rounded cursor-pointer"
+            title="Annotation Color"
+          />
+
+          <button (click)="closeImageModal()" class="p-2 rounded hover:bg-gray-700">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Image Display -->
+      <div class="flex-1 relative overflow-hidden bg-gray-900">
+        <img
+          [src]="selectedImage()?.imageUrl"
+          [alt]="getPatientName()"
+          [title]="getPatientName()"
+          alt="Medical image"
+          title="Medical image"
+          class="max-w-full max-h-full mx-auto object-contain"
+          (click)="onImageClick($event)"
+        />
+
+        <!-- Annotations Overlay -->
+        @if (selectedImage()?.annotations) {
+        <div class="absolute inset-0 pointer-events-none">
+          @for (annotation of selectedImage()!.annotations; track annotation.id) {
+          <div
+            class="absolute pointer-events-auto"
+            [style]="getAnnotationStyle(annotation)"
+            (click)="
+              $event.stopPropagation(); onDeleteAnnotation(selectedImage()!.id, annotation.id)
+            "
+          >
+            <div
+              class="w-4 h-4 bg-red-500 rounded-full cursor-pointer opacity-0 hover:opacity-100 transition-opacity"
+              title="Click to delete"
+            ></div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Image Info -->
+      <div class="bg-gray-800 text-white p-3 text-sm">
+        <div class="flex justify-between">
+          <span>Study Date: {{ selectedImage()?.metadata?.studyDate | date : 'mediumDate' }}</span>
+          <span>Body Part: {{ selectedImage()?.metadata?.bodyPart }}</span>
+          <span>Annotations: {{ selectedImage()?.annotations?.length || 0 }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Templates Modal -->
+  @if (showTemplatesModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="card p-6 max-w-4xl w-full max-h-[80vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-medical-700">Report Templates</h2>
+        <button (click)="closeTemplatesModal()" class="text-gray-500 hover:text-gray-700">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        @for (template of reportTemplates(); track template.id) {
+        <div
+          class="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+          (click)="onUseTemplate(template)"
+        >
+          <h3 class="font-semibold text-medical-600 mb-2">{{ template.name }}</h3>
+          <p class="text-sm text-gray-600 line-clamp-3">{{ template.findings }}</p>
+          <div class="mt-2">
+            <span
+              [ngClass]="getBiradsScoreClass(template.biradsScore)"
+              class="px-2 py-1 rounded-full text-xs"
+            >
+              BI-RADS {{ template.biradsScore }}
+            </span>
+          </div>
+        </div>
+        } @if (reportTemplates().length === 0) {
+        <div class="col-span-2 text-center py-8 text-gray-500">No templates available</div>
+        }
+      </div>
+
+      <div class="flex justify-end mt-6">
+        <button class="btn-primary" (click)="closeTemplatesModal()">Close</button>
+      </div>
+    </div>
+  </div>
+  }
+</div>

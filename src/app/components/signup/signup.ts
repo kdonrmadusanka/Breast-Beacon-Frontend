@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthService, SignupRequest } from '../../services/auth/auth';
 
 // Role options interface
 interface RoleOption {
@@ -19,13 +20,17 @@ interface RoleOption {
   styleUrls: ['./signup.css'],
   imports: [
     CommonModule,
-    ReactiveFormsModule, // ✅ Add this here
+    ReactiveFormsModule,
+    // No HttpClientModule or providers needed here
   ],
+  // Remove the providers array completely
 })
 export class Signup implements OnInit {
   signupForm: FormGroup;
   isLoading = false;
   showMedicalFields = false;
+  showPatientFields = false;
+  showAdminFields = false;
 
   // Role options
   roles: RoleOption[] = [
@@ -69,19 +74,23 @@ export class Signup implements OnInit {
     { value: 'gynecology', label: 'Gynecology' },
   ];
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
     this.signupForm = this.createForm();
   }
 
   ngOnInit(): void {
-    // Watch for role changes to show/hide medical fields
+    // Watch for role changes to show/hide fields
     this.signupForm.get('role')?.valueChanges.subscribe((role) => {
-      const selectedRole = this.roles.find((r) => r.value === role);
-      this.showMedicalFields = selectedRole?.requiresMedicalFields || false;
-
-      // Update validators based on role
+      this.updateFieldVisibility(role);
       this.updateFormValidators(role);
     });
+  }
+
+  private updateFieldVisibility(role: string): void {
+    // Update all visibility flags
+    this.showMedicalFields = ['radiologist', 'physician', 'technician'].includes(role);
+    this.showPatientFields = role === 'patient';
+    this.showAdminFields = role === 'admin';
   }
 
   private createForm(): FormGroup {
@@ -97,7 +106,7 @@ export class Signup implements OnInit {
         // Role selection
         role: ['patient', [Validators.required]],
 
-        // Medical professional fields (conditionally required)
+        // Medical professional fields
         licenseNumber: [''],
         specialization: [''],
         institution: [''],
@@ -108,7 +117,7 @@ export class Signup implements OnInit {
         phoneNumber: [''],
         address: [''],
 
-        // Admin-specific fields
+        // Admin-specific field
         adminId: [''],
       },
       { validators: this.passwordMatchValidator }
@@ -183,20 +192,71 @@ export class Signup implements OnInit {
   onSubmit(): void {
     if (this.signupForm.invalid) {
       this.markFormGroupTouched();
+      console.log('❌ Form invalid, errors:', this.getFormErrors());
       return;
     }
 
     this.isLoading = true;
 
-    // Here you would call your authentication service
-    console.log('Form submitted:', this.signupForm.value);
+    // Prepare data for backend
+    const formData = this.signupForm.value;
 
-    // Simulate API call
-    setTimeout(() => {
-      this.isLoading = false;
-      // Navigate to verification or login page
-      this.router.navigate(['/login']);
-    }, 2000);
+    // Remove confirmPassword as it's not needed by backend
+    const { confirmPassword, ...userData } = formData;
+
+    // Convert date to ISO string if it exists
+    if (userData.dateOfBirth) {
+      userData.dateOfBirth = new Date(userData.dateOfBirth).toISOString();
+    }
+
+    console.log('Sending to backend:', userData);
+
+    // Call the auth service
+    this.authService.register(userData as SignupRequest).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        console.log('Registration successful:', response);
+
+        // Handle successful registration
+        if (response.success) {
+          // Store token if provided
+          if (response.token) {
+            localStorage.setItem('authToken', response.token);
+          }
+
+          // Show success message
+          alert(response.message);
+
+          // Navigate based on verification requirement
+          if (response.requiresVerification) {
+            this.router.navigate(['/login'], {
+              queryParams: { message: 'Please check your email for verification.' },
+            });
+          } else {
+            this.router.navigate(['/login'], {
+              queryParams: { message: 'Account created successfully! Please sign in.' },
+            });
+          }
+        }
+      },
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Registration failed:', error);
+
+        // Handle different error types
+        let errorMessage = 'Registration failed. Please try again.';
+
+        if (error.status === 409) {
+          errorMessage = 'Email address is already registered.';
+        } else if (error.status === 400) {
+          errorMessage = error.error?.message || 'Invalid data provided.';
+        } else if (error.status === 500) {
+          errorMessage = 'Server error. Please try again later.';
+        }
+
+        alert(errorMessage);
+      },
+    });
   }
 
   private markFormGroupTouched(): void {
@@ -207,6 +267,17 @@ export class Signup implements OnInit {
   }
 
   navigateToLogin(): void {
-    // this.router.navigate(['/login']);
+    this.router.navigate(['/login']);
+  }
+
+  private getFormErrors(): any {
+    const errors: any = {};
+    Object.keys(this.signupForm.controls).forEach((key) => {
+      const control = this.signupForm.get(key);
+      if (control?.errors) {
+        errors[key] = control.errors;
+      }
+    });
+    return errors;
   }
 }

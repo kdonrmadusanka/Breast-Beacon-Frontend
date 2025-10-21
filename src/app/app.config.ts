@@ -1,6 +1,7 @@
 // src/app/app.config.ts
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
+import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -17,5 +18,8 @@ export const appConfig: ApplicationConfig = {
       }),
       withViewTransitions()
     ),
+
+    // HttpClient configuration with fetch for better performance
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
   ],
 };
